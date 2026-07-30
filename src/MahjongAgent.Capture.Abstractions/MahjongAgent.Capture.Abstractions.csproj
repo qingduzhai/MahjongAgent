@@ -1,5 +1,2 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="../MahjongAgent.Core/MahjongAgent.Core.csproj" />
-  </ItemGroup>
 </Project>

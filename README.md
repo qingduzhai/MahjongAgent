@@ -1,6 +1,6 @@
 # MahjongAgent
 
-MahjongAgent 是一个面向 Windows 桌面的开源麻将观察 Agent。它监控用户明确选择的麻将窗口，通过多模态视觉将画面变化转换为结构化牌局事件，维护本局状态，并提供牌效、规则、风险和出牌建议。
+MahjongAgent 是一个面向 Windows 桌面的开源麻将观察 Agent。它可以读取用户明确选择的麻将窗口或完整牌局视频，通过多模态视觉将画面变化转换为结构化牌局事件，维护本局状态，并提供牌效、规则、风险和出牌建议。
 
 产品采用双界面形态：主窗口是配置、运维和局内可视化仪表盘；悬浮助手是牌局进行时的核心交互界面。
 
@@ -14,6 +14,7 @@ MahjongAgent 是一个面向 Windows 桌面的开源麻将观察 Agent。它监�
 
 - 结构化 `GameState` 是唯一权威牌局记忆；
 - 多模态模型只产生候选观察，必须经过时序和规则校验；
+- 视频和实时窗口只是可替换的画面源，后续感知、状态和策略链路完全复用；
 - 不读取游戏进程内存，不注入游戏，不自动点击或出牌；
 - 核心规则、策略和记忆保持跨平台，Windows 能力置于平台外壳；
 - 视觉档案和用户纠错可持久化、可审计、可回滚；
@@ -23,7 +24,7 @@ MahjongAgent 是一个面向 Windows 桌面的开源麻将观察 Agent。它监�
 
 - .NET 10 LTS / C#；
 - WPF Windows 桌面外壳；
-- Windows Graphics Capture；
+- 统一 `IFrameSource`，首批支持视频回放并预留 Windows Graphics Capture；
 - SQLite；
 - 多模态 Provider 抽象；
 - Python 仅用于后续离线数据和模型训练。
@@ -34,7 +35,7 @@ MahjongAgent 是一个面向 Windows 桌面的开源麻将观察 Agent。它监�
 src/
   MahjongAgent.Core                  跨平台领域模型和事件状态
   MahjongAgent.Agent                 Agent 编排与工具调度
-  MahjongAgent.Capture.Abstractions  跨平台捕获接口
+  MahjongAgent.Capture.Abstractions  跨平台画面源、帧与时间轴接口
   MahjongAgent.Perception            多模态观察与校验协议
   MahjongAgent.Providers.OpenAICompatible  OpenAI 兼容多模态 Provider
   MahjongAgent.Rules.Wuhan           武汉麻将规则族
