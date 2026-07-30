@@ -1,24 +1,36 @@
 # 03 悬浮助手 · 待机胶囊(高保真稿)
 
 > 对应提示词 v2 第五节 1。悬浮助手第一优先级。
-> **v1.1 修订**(按 `review-codex.md` P0-3):交互模型重做为 **PassiveOverlay / InteractiveOverlay** 双模式;删除"按住 Alt 进入交互态";悬停展开、拖动、右键菜单、Tooltip 仅在 InteractiveOverlay 可用。快捷键全部可配置,文中 `Alt+M`/`Alt+P` 仅为 Mock 占位。
+> **v1.1 修订**(按 `review-codex.md` P0-3):交互模型重做为 PassiveOverlay / InteractiveOverlay 双模式;删除"按住 Alt 进入交互态";快捷键全部可配置,`Alt+M`/`Alt+P` 仅为 Mock 占位。
+> **v1.2 修订**(按 `review-codex-round-2.md` R2-P0-1/R2-P1-1):InteractiveOverlay 必须同时摘除 `WS_EX_TRANSPARENT` 与 `WS_EX_NOACTIVATE` 并显式激活——只摘穿透无法获得键盘焦点;退出以 `Deactivated` 判定"点击面板外",不使用覆盖游戏的透明命中层。
+> **v1.3 修订**(第三轮审核):`Deactivated` 退出增加自有窗口/输入法候选窗作用域过滤(纠错弹窗/文件选择器/输入法激活时不退出);前台恢复分路径——仅 Esc/热键/超时/显式关闭恢复此前前台窗口,`Deactivated` 路径不恢复。
 
 ## 0. 悬浮层交互模式(三层形态通用,先于一切组件规格)
 
 ```text
 PassiveOverlay(默认)
-  · 不激活、鼠标穿透(WS_EX_TRANSPARENT)、只显示
+  WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE | WS_EX_TRANSPARENT;ShowActivated=False
+  · 鼠标穿透、只显示、不获取键盘焦点
   · 不响应:悬停、单击、右键、Tooltip、Esc、方向键
   · 唯一输入:全局热键(可配置)
 
-InteractiveOverlay(全局热键进入)
-  · 临时摘除穿透,窗口可获得焦点
+InteractiveOverlay(全局热键进入——用户显式请求的交互状态,允许临时激活)
+  保留 WS_EX_TOOLWINDOW;摘除 WS_EX_TRANSPARENT 与 WS_EX_NOACTIVATE
+  · 记录此前前台窗口 HWND;显式激活 OverlayHostWindow;
+    键盘焦点放到选中控件(详细面板默认为追问框)
   · 允许:鼠标点击/拖动/右键、Tooltip、键盘、追问输入、纠错
-  · 退出:Esc / 再按热键 / 完成操作 / 无操作超时(默认 30s,可配)/ 目标窗口丢失
-  · 退出后回到 PassiveOverlay
+  · 退出:Esc / 再按热键 / 显式关闭 / 窗口 Deactivated(焦点转到外部
+    应用;自有窗口与输入法候选窗除外,见 12 §3)/ 无操作超时(默认 30s,
+    可配)/ 目标窗口丢失
+  · 退出时:清除输入焦点 → 恢复 WS_EX_NOACTIVATE 与 WS_EX_TRANSPARENT →
+    回 PassiveOverlay;前台恢复分路径:仅 Esc/热键/超时/显式关闭恢复
+    此前前台窗口,Deactivated 路径不恢复(避免抢回焦点)
 ```
 
-被动模式下系统照常自动弹出/收起紧凑建议卡——那是**纯展示**,不要求也不接受指针输入。用户想"碰"悬浮层,唯一的入口是全局热键。
+- "不抢焦点"只适用于 PassiveOverlay;InteractiveOverlay 是用户通过全局热键显式请求的临时激活态(R2-P0-1);
+- 被动模式下系统照常自动弹出/收起紧凑建议卡——那是**纯展示**,不要求也不接受指针输入;
+- "点击面板外收起"**不依赖**覆盖游戏窗口的透明命中层(会拦截游戏操作);OverlayHostWindow 保持内容大小,用户点击游戏导致窗口 `Deactivated` 时退出交互态(R2-P1-1);`Deactivated` 需先经**自有作用域过滤**(纠错弹窗/本进程文件选择器/输入法候选窗激活时不退出),且该路径退出后**不恢复**此前前台窗口(v1.3,见 12 §3);
+- 无操作计时在**输入法组合、追问请求发送中、纠错弹窗打开期间暂停**,弹窗关闭后恢复(决定 #1)。
 
 ## 1. 定位与职责
 
@@ -26,7 +38,7 @@ InteractiveOverlay(全局热键进入)
 
 - 尺寸:**180×40**(InteractiveOverlay 下悬停展开为 248×40);
 - 吸附目标游戏窗口边缘,默认**窗口外侧右上**;屏幕空间不足时使用标定确认的**窗口内安全区**(吸附位置与回退安全区均记入 WindowProfile,review 决定 #2);
-- 不遮挡游戏手牌区与操作按钮区;不抢焦点;被动模式鼠标穿透。
+- 不遮挡游戏手牌区与操作按钮区;PassiveOverlay 不抢焦点、鼠标穿透。
 
 ## 2. 结构分解(正常态,180×40)
 
@@ -44,7 +56,7 @@ x=0                                                          x=180
 | 容器 | 180×40 | `Brush.Bg.Overlay`,`Radius.Capsule`,1px `Brush.Border.Subtle`,`Shadow.Overlay` |
 | 状态点 | x12 y16,8×8 圆 | 颜色随状态(见第 3 节),**同时**在文本中体现,非唯一表达 |
 | 状态文本 | x28 起,垂直居中 | Caption 11/16,`Brush.Text.Primary`;三段以 `·` 分隔:连接状态 / 巡目 / 识别健康度 |
-| 拖动柄 | 右缘 x164,宽 12 | 六点竖纹,`Brush.Text.Tertiary`;**仅 InteractiveOverlay 显示**(被动模式隐藏,穿透状态下任何悬停反馈都不存在) |
+| 拖动柄 | 右缘 x164,宽 12 | 六点竖纹,`Brush.Text.Tertiary`;**仅 InteractiveOverlay 显示**(被动模式穿透,无悬停反馈) |
 
 **InteractiveOverlay 悬停展开态**(248×40,200ms 向右扩展):
 
@@ -138,13 +150,14 @@ x=0                                                          x=180
 | 行为 | PassiveOverlay | InteractiveOverlay |
 |---|---|---|
 | 指针 | 完全穿透,事件直达游戏 | 正常命中 |
+| 激活/焦点 | 不激活(`NOACTIVATE`),无键盘焦点 | 显式激活,焦点进入控件;退出时按路径恢复前台:Esc/热键/超时/显式关闭恢复,Deactivated 不恢复(v1.3) |
 | 进入方式 | —(默认) | 全局热键(可配置,Mock 占位 `Alt+M`) |
 | 拖动改附 | 不可用 | 拖拖动柄;近窗口四边 24px 出吸附引导线;松手记录锚点入 WindowProfile |
 | 单击胶囊 | 穿透(等于点游戏) | 展开紧凑建议卡;无建议时显示空态卡 `暂无建议,等待你的回合` |
 | 右键 | 穿透 | 菜单:暂停监控 / 隐藏提示 / 打开仪表盘 / 重新同步 / 退出 |
 | Tooltip | 无 | 400ms 延迟 |
 | 键盘 | 仅全局热键 | `Esc` 退出回被动;面板内 `↑↓`/`Enter`(见 05) |
-| 退回被动 | — | `Esc` / 再按热键 / 无操作 30s(可配)/ 窗口丢失 |
+| 退回被动 | — | `Esc` / 再按热键 / 显式关闭 / `Deactivated`(焦点转到外部应用;自有窗口与输入法候选窗除外,见 12 §3)/ 无操作 30s(可配;输入法组合·追问发送·纠错弹窗期间暂停)/ 窗口丢失;仅显式退出路径恢复此前前台窗口 |
 | 目标窗口移动/缩放/最小化 | 跟随锚点重定位;最小化降级为迷你点贴原位置;关闭 → 3.6 窗口丢失态(两模式相同) | 同左 |
 | 多显示器/DPI | 跟随目标窗口所在显示器;Per-Monitor V2 重算 | 同左 |
 
@@ -166,4 +179,4 @@ x=0                                                          x=180
 
 ## 6. WPF 映射要点(详见 12 号文件)
 
-三层形态由**单一 `OverlayHostWindow`** 承载(review P1-3):`ContentControl` + 状态对应 `ContentTemplate`;胶囊模板 = `Border(CornerRadius=20) > Grid[3列]`(Ellipse + TextBlock + 拖动柄 Path)。Passive/Interactive 切换 = Platform.Windows 摘挂 `WS_EX_TRANSPARENT`;窗口常态 `Topmost`、`ShowActivated=False`、`WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW`。
+三层形态由**单一 `OverlayHostWindow`** 承载:`ContentControl` + 状态对应 `ContentTemplate`;胶囊模板 = `Border(CornerRadius=20) > Grid[3列]`(Ellipse + TextBlock + 拖动柄 Path)。Passive/Interactive 切换 = Platform.Windows 按 §0 状态转换摘挂 `WS_EX_TRANSPARENT` 与 `WS_EX_NOACTIVATE`、激活窗口并管理前台窗口恢复。
