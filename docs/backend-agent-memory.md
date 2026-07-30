@@ -117,7 +117,7 @@ MemoryConsolidated
 ```csharp
 public interface IMultimodalPerceptionProvider
 {
-  Task<ObservationBatch> ObserveAsync(
+  Task<PerceptionResult> ObserveAsync(
     PerceptionRequest request,
     CancellationToken cancellationToken);
 }
@@ -145,6 +145,49 @@ Provider 层要求：
 - 记录模型版本、提示版本、耗时、Token 和成本；
 - API Key 不进入日志、SQLite 或诊断包；
 - 可替换为未来本地 ONNX 感知实现。
+
+### 6.1 OpenAI-Compatible 首版协议
+
+首个实现采用广泛兼容的 Chat Completions 多模态协议，不把运行时绑定到 OpenAI 自有端点：
+
+```text
+BaseUri + ChatCompletionsPath
+  → POST chat/completions
+  → messages[].content[text + image_url]
+  → response_format
+  → choices[0].message.content
+```
+
+配置只保存凭据引用，不保存真实 Key：
+
+```json
+{
+  "providerId": "my-vision-provider",
+  "baseUri": "https://provider.example/v1/",
+  "chatCompletionsPath": "chat/completions",
+  "perceptionModel": "vision-model",
+  "credentialId": "mahjong-agent/provider/my-vision-provider",
+  "apiKeyTransport": "Bearer",
+  "structuredOutputMode": "JsonSchema"
+}
+```
+
+认证传输支持：
+
+- `Bearer`：`Authorization: Bearer <key>`；
+- `Header`：可配置 Header 名称和前缀；
+- `None`：用于本地兼容端点。
+
+结构化输出支持两级：
+
+1. `JsonSchema`：默认模式，发送严格 `response_format.json_schema`；
+2. `JsonObject`：兼容降级模式，发送 `response_format: json_object`，并把 Schema 写入提示词。
+
+不支持任何 JSON 保证的端点不进入牌局正式感知链路。即使 Provider 返回合法 JSON，也只能产生候选观察，仍需经过 Observation Schema、牌数守恒、时序和规则校验。
+
+Provider 配置声明能力，构造时校验所选模式；端点连通性和真实能力探测将在设置页保存配置前执行。请求同时限制图片数量、单图大小、总字节数和超时。
+
+首版暂不实现 `/responses`、流式输出和厂商专用 SDK。未来可以增加协议模式，但不得改变上层 `IMultimodalPerceptionProvider` 契约。
 
 ## 7. 记忆分层
 

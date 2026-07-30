@@ -1,4 +1,5 @@
 using MahjongAgent.Core.Tiles;
+using MahjongAgent.Providers.OpenAICompatible;
 
 namespace MahjongAgent.Architecture.Tests;
 
@@ -8,6 +9,21 @@ public sealed class CorePlatformBoundaryTests
   public void Core_does_not_reference_windows_desktop_assemblies()
   {
     var referencedAssemblyNames = typeof(TileType)
+      .Assembly
+      .GetReferencedAssemblies()
+      .Select(name => name.Name)
+      .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+    Assert.DoesNotContain("PresentationCore", referencedAssemblyNames);
+    Assert.DoesNotContain("PresentationFramework", referencedAssemblyNames);
+    Assert.DoesNotContain("System.Windows.Forms", referencedAssemblyNames);
+    Assert.DoesNotContain("WindowsBase", referencedAssemblyNames);
+  }
+
+  [Fact]
+  public void OpenAI_compatible_provider_does_not_reference_windows_desktop_assemblies()
+  {
+    var referencedAssemblyNames = typeof(OpenAiCompatiblePerceptionProvider)
       .Assembly
       .GetReferencedAssemblies()
       .Select(name => name.Name)

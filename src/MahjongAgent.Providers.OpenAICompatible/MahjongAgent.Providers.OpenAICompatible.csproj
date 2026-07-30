@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../MahjongAgent.Perception/MahjongAgent.Perception.csproj" />
+  </ItemGroup>
+</Project>

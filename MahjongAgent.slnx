@@ -5,6 +5,7 @@
     <Project Path="src/MahjongAgent.Core/MahjongAgent.Core.csproj" />
     <Project Path="src/MahjongAgent.Perception/MahjongAgent.Perception.csproj" />
     <Project Path="src/MahjongAgent.Platform.Windows/MahjongAgent.Platform.Windows.csproj" />
+    <Project Path="src/MahjongAgent.Providers.OpenAICompatible/MahjongAgent.Providers.OpenAICompatible.csproj" />
     <Project Path="src/MahjongAgent.Rules.Wuhan/MahjongAgent.Rules.Wuhan.csproj" />
     <Project Path="src/MahjongAgent.Storage/MahjongAgent.Storage.csproj" />
     <Project Path="src/MahjongAgent.Strategy/MahjongAgent.Strategy.csproj" />
@@ -12,6 +13,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/MahjongAgent.Architecture.Tests/MahjongAgent.Architecture.Tests.csproj" />
     <Project Path="tests/MahjongAgent.Core.Tests/MahjongAgent.Core.Tests.csproj" />
+    <Project Path="tests/MahjongAgent.Providers.OpenAICompatible.Tests/MahjongAgent.Providers.OpenAICompatible.Tests.csproj" />
     <Project Path="tests/MahjongAgent.Rules.Wuhan.Tests/MahjongAgent.Rules.Wuhan.Tests.csproj" />
   </Folder>
 </Solution>

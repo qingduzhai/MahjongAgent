@@ -36,12 +36,14 @@ src/
   MahjongAgent.Agent                 Agent 编排与工具调度
   MahjongAgent.Capture.Abstractions  跨平台捕获接口
   MahjongAgent.Perception            多模态观察与校验协议
+  MahjongAgent.Providers.OpenAICompatible  OpenAI 兼容多模态 Provider
   MahjongAgent.Rules.Wuhan           武汉麻将规则族
   MahjongAgent.Strategy              牌效、风险和候选动作
   MahjongAgent.Storage               档案、事件和快照持久化
   MahjongAgent.Platform.Windows      WPF、窗口捕获和悬浮层
 tests/
   MahjongAgent.Core.Tests
+  MahjongAgent.Providers.OpenAICompatible.Tests
   MahjongAgent.Rules.Wuhan.Tests
   MahjongAgent.Architecture.Tests
 docs/

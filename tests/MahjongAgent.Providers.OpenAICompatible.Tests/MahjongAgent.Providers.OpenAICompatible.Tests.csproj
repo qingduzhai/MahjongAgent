@@ -1,12 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../../src/MahjongAgent.Agent/MahjongAgent.Agent.csproj" />
-    <ProjectReference Include="../../src/MahjongAgent.Platform.Windows/MahjongAgent.Platform.Windows.csproj" />
     <ProjectReference Include="../../src/MahjongAgent.Providers.OpenAICompatible/MahjongAgent.Providers.OpenAICompatible.csproj" />
   </ItemGroup>
   <ItemGroup>
