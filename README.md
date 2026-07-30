@@ -2,6 +2,8 @@
 
 MahjongAgent 是一个面向 Windows 桌面的开源麻将观察 Agent。它监控用户明确选择的麻将窗口，通过多模态视觉将画面变化转换为结构化牌局事件，维护本局状态，并提供牌效、规则、风险和出牌建议。
 
+产品采用双界面形态：主窗口是配置、运维和局内可视化仪表盘；悬浮助手是牌局进行时的核心交互界面。
+
 首个规则集聚焦武汉红中赖子杠。Demo 使用多模态模型完成陌生窗口标定和牌面理解，并通过持久化的 `WindowProfile` 复用不同游戏界面的布局、皮肤和规则记忆。
 
 ## 当前状态
@@ -63,7 +65,8 @@ dotnet build MahjongAgent.slnx
 
 - [总体设计方案](docs/architecture.md)
 - [桌面技术选型](docs/adr/0001-desktop-stack.md)
-- [Kimi UI 设计提示词](docs/ui/kimi-ui-prompt-v1.md)
+- [产品界面职责](docs/adr/0002-product-surfaces.md)
+- [Kimi UI 设计提示词 v2](docs/ui/kimi-ui-prompt-v2.md)
 - [UI 审核清单](docs/ui/ui-review-checklist.md)
 - [UI 协作边界](docs/ui/handoff-contract.md)
 
