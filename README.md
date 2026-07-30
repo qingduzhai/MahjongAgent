@@ -1,5 +1,10 @@
 # MahjongAgent
 
+[![CI](https://github.com/qingduzhai/MahjongAgent/actions/workflows/ci.yml/badge.svg)](https://github.com/qingduzhai/MahjongAgent/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/qingduzhai/MahjongAgent?include_prereleases)](https://github.com/qingduzhai/MahjongAgent/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows%20x64-3B82F6)](docs/releases/0.1.0-preview.1.md)
+
 面向 Windows 的开源麻将观察 Agent。它持续截取用户明确选择的牌局窗口，将静态截图转换为结构化观察，并以可回放的牌局状态为基础提供规则、牌效、风险与出牌建议。
 
 首个规则集聚焦武汉红中赖子杠。目标窗口可以是麻将游戏，也可以是播放完整牌局视频的播放器或浏览器；Agent 与多模态 Provider 始终处理单张截图，不上传整段视频。
@@ -46,7 +51,7 @@
 - PowerShell 7 或 Windows PowerShell。
 
 ```powershell
-git clone <repository-url>
+git clone https://github.com/qingduzhai/MahjongAgent.git
 cd MahjongAgent
 dotnet restore MahjongAgent.slnx
 dotnet test MahjongAgent.slnx --configuration Release
