@@ -4,11 +4,24 @@
     <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <Version>0.1.0</Version>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <InformationalVersion>0.1.0-preview.1</InformationalVersion>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../MahjongAgent.Agent/MahjongAgent.Agent.csproj" />
     <ProjectReference Include="../MahjongAgent.Capture.Abstractions/MahjongAgent.Capture.Abstractions.csproj" />
     <ProjectReference Include="../MahjongAgent.Core/MahjongAgent.Core.csproj" />
     <ProjectReference Include="../MahjongAgent.Providers.OpenAICompatible/MahjongAgent.Providers.OpenAICompatible.csproj" />
+    <ProjectReference Include="../MahjongAgent.Storage/MahjongAgent.Storage.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="../../LICENSE"
+          Link="LICENSE.txt"
+          CopyToPublishDirectory="PreserveNewest" />
+    <None Include="../../docs/releases/0.1.0-preview.1.md"
+          Link="README.md"
+          CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

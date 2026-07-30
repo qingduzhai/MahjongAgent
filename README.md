@@ -8,7 +8,7 @@ MahjongAgent 是一个面向 Windows 桌面的开源麻将观察 Agent。它监�
 
 ## 当前状态
 
-项目处于设计与骨架阶段，尚不可用于实际牌局。
+项目处于技术预览阶段，尚不可用于实际牌局。`0.1.0-preview.1` 已能在 Windows 上选择窗口、截取画面、配置 OpenAI-Compatible Provider 并对单张截图执行结构化视觉验证，使用说明见 [首个预览版说明](docs/releases/0.1.0-preview.1.md)。
 
 当前已具备 OpenAI-Compatible Provider、能力探测与凭据事务、统一截图帧协议，以及不依赖 LangGraph 的 C# Agent 状态机与 checkpoint 契约。
 

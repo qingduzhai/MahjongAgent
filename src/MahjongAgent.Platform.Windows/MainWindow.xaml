@@ -1,21 +1,262 @@
 <Window x:Class="MahjongAgent.Platform.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MahjongAgent"
-        Width="1280"
-        Height="800"
-        MinWidth="1024"
-        MinHeight="640"
+        Title="MahjongAgent · Preview"
+        Width="1440"
+        Height="900"
+        MinWidth="1180"
+        MinHeight="720"
+        Background="#101513"
+        Foreground="#E8EFEC"
         WindowStartupLocation="CenterScreen">
-  <Grid Background="#151A19">
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-      <TextBlock HorizontalAlignment="Center"
-                 FontSize="32"
-                 Foreground="#E8EFEC"
-                 Text="MahjongAgent" />
-      <TextBlock Margin="0,12,0,0"
-                 Foreground="#91A09A"
-                 Text="UI 设计审核完成后开始实现" />
-    </StackPanel>
+  <Window.Resources>
+    <SolidColorBrush x:Key="PanelBrush" Color="#18201D" />
+    <SolidColorBrush x:Key="PanelAltBrush" Color="#202A26" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#34423C" />
+    <SolidColorBrush x:Key="MutedBrush" Color="#91A09A" />
+    <SolidColorBrush x:Key="AccentBrush" Color="#55C59A" />
+    <Style TargetType="TextBox">
+      <Setter Property="Margin" Value="0,5,0,12" />
+      <Setter Property="Padding" Value="10,7" />
+      <Setter Property="Background" Value="#101513" />
+      <Setter Property="Foreground" Value="#E8EFEC" />
+      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+      <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}" />
+    </Style>
+    <Style TargetType="PasswordBox">
+      <Setter Property="Margin" Value="0,5,0,12" />
+      <Setter Property="Padding" Value="10,7" />
+      <Setter Property="Background" Value="#101513" />
+      <Setter Property="Foreground" Value="#E8EFEC" />
+      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+      <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}" />
+    </Style>
+    <Style TargetType="ComboBox">
+      <Setter Property="Margin" Value="0,5,0,12" />
+      <Setter Property="Padding" Value="8,6" />
+    </Style>
+    <Style TargetType="Button">
+      <Setter Property="Padding" Value="14,8" />
+      <Setter Property="Margin" Value="0,0,8,0" />
+      <Setter Property="Background" Value="#2C5546" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="BorderBrush" Value="#4C8D74" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style x:Key="CardStyle" TargetType="Border">
+      <Setter Property="Background" Value="{StaticResource PanelBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="18" />
+    </Style>
+    <Style x:Key="LabelStyle" TargetType="TextBlock">
+      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+      <Setter Property="FontSize" Value="12" />
+    </Style>
+  </Window.Resources>
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="72" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="32" />
+    </Grid.RowDefinitions>
+
+    <Border Grid.Row="0" Background="#17261F" BorderBrush="#2F4D40" BorderThickness="0,0,0,1">
+      <Grid Margin="24,0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <StackPanel VerticalAlignment="Center">
+          <TextBlock FontSize="24" FontWeight="SemiBold" Text="MahjongAgent" />
+          <TextBlock Foreground="{StaticResource MutedBrush}"
+                     Text="截图感知实验室 · 0.1.0-preview.1" />
+        </StackPanel>
+        <Border Grid.Column="1"
+                Padding="12,7"
+                VerticalAlignment="Center"
+                Background="#20392F"
+                CornerRadius="16">
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Foreground="{StaticResource AccentBrush}" Text="Agent · " />
+            <TextBlock Foreground="{StaticResource AccentBrush}" Text="{Binding AgentPhase}" />
+          </StackPanel>
+        </Border>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1" Margin="18">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="300" />
+        <ColumnDefinition Width="12" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="12" />
+        <ColumnDefinition Width="370" />
+      </Grid.ColumnDefinitions>
+
+      <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <TextBlock FontSize="18" FontWeight="SemiBold" Text="1 · 选择画面窗口" />
+          <TextBlock Grid.Row="1"
+                     Margin="0,6,0,12"
+                     Foreground="{StaticResource MutedBrush}"
+                     TextWrapping="Wrap"
+                     Text="可以选择麻将游戏、视频播放器或浏览器窗口。Agent 只处理静态截图。" />
+          <ListBox Grid.Row="2"
+                   ItemsSource="{Binding Windows}"
+                   SelectedItem="{Binding SelectedWindow}"
+                   DisplayMemberPath="DisplayLabel"
+                   Background="#101513"
+                   Foreground="#DDE7E2"
+                   BorderBrush="{StaticResource BorderBrush}"
+                   HorizontalContentAlignment="Stretch" />
+          <StackPanel Grid.Row="3" Margin="0,12,0,0">
+            <WrapPanel>
+              <Button Click="RefreshWindows_Click" Content="刷新窗口" />
+              <Button Click="Capture_Click" Content="截取当前画面" />
+            </WrapPanel>
+            <TextBlock Margin="0,10,0,0"
+                       Foreground="{StaticResource MutedBrush}"
+                       TextWrapping="Wrap"
+                       Text="{Binding CaptureStatus}" />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <Grid Grid.Column="2">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="3*" />
+          <RowDefinition Height="12" />
+          <RowDefinition Height="2*" />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Style="{StaticResource CardStyle}">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <DockPanel Margin="0,0,0,12">
+              <Button DockPanel.Dock="Right"
+                      Click="Analyze_Click"
+                      Content="实验性识别截图" />
+              <StackPanel>
+                <TextBlock FontSize="18" FontWeight="SemiBold" Text="2 · 截图预览" />
+                <TextBlock Foreground="{StaticResource MutedBrush}"
+                           Text="识别前请确认截图未包含不希望上传的信息。" />
+              </StackPanel>
+            </DockPanel>
+            <Border Grid.Row="1"
+                    Background="#090C0B"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6">
+              <Grid>
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="#5F6D67"
+                           FontSize="16"
+                           Text="截图将在这里显示" />
+                <Image Source="{Binding ScreenshotPreview}" Stretch="Uniform" />
+              </Grid>
+            </Border>
+          </Grid>
+        </Border>
+
+        <Border Grid.Row="2" Style="{StaticResource CardStyle}">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackPanel Margin="0,0,0,10">
+              <TextBlock FontSize="18" FontWeight="SemiBold" Text="结构化识别结果" />
+              <TextBlock Foreground="#D7B86A"
+                         Text="当前仅验证视觉链路，不提供正式出牌策略。" />
+            </StackPanel>
+            <TextBox Grid.Row="1"
+                     Margin="0"
+                     IsReadOnly="True"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto"
+                     FontFamily="Consolas"
+                     Text="{Binding AnalysisJson, Mode=OneWay}" />
+          </Grid>
+        </Border>
+      </Grid>
+
+      <Border Grid.Column="4" Style="{StaticResource CardStyle}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel>
+            <TextBlock FontSize="18" FontWeight="SemiBold" Text="3 · 多模态 Provider" />
+            <TextBlock Margin="0,6,0,14"
+                       Foreground="{StaticResource MutedBrush}"
+                       TextWrapping="Wrap"
+                       Text="OpenAI-Compatible 配置。API Key 只写入 Windows Credential Manager。" />
+
+            <TextBlock Style="{StaticResource LabelStyle}" Text="Base URL（必须以 / 结尾）" />
+            <TextBox Text="{Binding BaseUrl, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Style="{StaticResource LabelStyle}" Text="Chat Completions Path（不能以 / 开头）" />
+            <TextBox Text="{Binding CompletionsPath, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Style="{StaticResource LabelStyle}" Text="视觉模型 ID" />
+            <TextBox Text="{Binding ModelId, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <StackPanel>
+                <TextBlock Style="{StaticResource LabelStyle}" Text="认证方式" />
+                <ComboBox ItemsSource="{Binding AuthenticationModes}"
+                          SelectedItem="{Binding Authentication}" />
+              </StackPanel>
+              <StackPanel Grid.Column="2">
+                <TextBlock Style="{StaticResource LabelStyle}" Text="结构化输出" />
+                <ComboBox ItemsSource="{Binding StructuredOutputModes}"
+                          SelectedItem="{Binding StructuredOutput}" />
+              </StackPanel>
+            </Grid>
+
+            <TextBlock Style="{StaticResource LabelStyle}" Text="API Key（留空表示继续使用已保存 Key）" />
+            <PasswordBox x:Name="ApiKeyPasswordBox" />
+            <TextBlock Style="{StaticResource LabelStyle}" Text="自定义 Header 名称（Header 认证时使用）" />
+            <TextBox Text="{Binding ApiKeyHeaderName, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Style="{StaticResource LabelStyle}" Text="Key 前缀（可选，例如 Token + 空格）" />
+            <TextBox Text="{Binding ApiKeyPrefix, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Style="{StaticResource LabelStyle}" Text="图片 detail" />
+            <ComboBox ItemsSource="{Binding ImageDetails}"
+                      SelectedItem="{Binding ImageDetail}" />
+
+            <Button Margin="0,4,0,0"
+                    HorizontalAlignment="Left"
+                    Click="TestProvider_Click"
+                    Content="测试连接并保存" />
+            <Border Margin="0,14,0,0"
+                    Padding="12"
+                    Background="{StaticResource PanelAltBrush}"
+                    CornerRadius="6">
+              <TextBlock TextWrapping="Wrap" Text="{Binding ProviderStatus}" />
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+    </Grid>
+
+    <Border Grid.Row="2" Background="#0B0F0D" BorderBrush="#26312C" BorderThickness="0,1,0,0">
+      <TextBlock Margin="18,0"
+                 VerticalAlignment="Center"
+                 Foreground="#77867F"
+                 Text="Preview 版本 · 不自动点击、不读取游戏进程、不保存完整截图" />
+    </Border>
   </Grid>
 </Window>
