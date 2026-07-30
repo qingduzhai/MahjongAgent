@@ -1,0 +1,46 @@
+name: Bug report
+description: 报告可复现的问题
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请勿提交 API Key、完整牌局截图、昵称或其他个人信息。
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      placeholder: 例如 0.1.0-preview.1 或 commit SHA
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows 版本
+      placeholder: 例如 Windows 11 24H2 x64
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      description: 实际发生了什么？期望结果是什么？
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 打开……
+        2. 选择……
+        3. 点击……
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: 诊断信息
+      description: 请先删除 Key、路径、请求内容和个人信息。不要上传未经脱敏的截图。
+      render: text
