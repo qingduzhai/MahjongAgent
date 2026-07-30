@@ -19,7 +19,7 @@
 ## 2. 核心决策
 
 1. 运行时采用纯 C#/.NET 10，不依赖 Python Agent 服务。
-2. 不直接引入 LangGraph、Mem0、Graphiti、Letta 或 Cognee 作为核心运行时。
+2. 不直接引入 LangGraph、Mem0、Graphiti、Letta 或 Cognee 作为核心运行时；Agent Graph 由 C# 强类型状态机实现，详见 [ADR-0004](adr/0004-csharp-agent-orchestration.md)。
 3. 吸收它们的记忆分层、混合检索、后台整合、时间有效期和来源追踪设计。
 4. SQLite 是 Demo 的唯一持久化数据库。
 5. `GameEvent` 是本局唯一事实来源，`GameState` 是可重建快照。
@@ -83,12 +83,11 @@ RoundEnded
 
 ## 5. Agent 编排
 
-首版采用单 Agent 编排器，不使用多个 LLM Agent 互相讨论。
+首版采用单 Agent 编排器，不使用多个 LLM Agent 互相讨论。`AgentSignal` 是输入，`AgentStateMachine` 是纯迁移规则，`AgentWorkflowSnapshot` 是可持久化状态，`AgentOrchestrator` 负责串行调度和先 checkpoint 后发布。
 
 ```text
 Idle
-→ TargetDetected
-→ Calibrating
+→ Calibrating（需要时）
 → WaitingForRound
 → Observing
 → ResolvingObservation
@@ -98,6 +97,31 @@ Idle
 → RoundEnded
 → ConsolidatingMemory
 ```
+
+旁路状态：任一活动阶段可显式进入 `Paused` 或 `Recovering`，完成后返回原阶段；不可恢复错误进入 `Faulted`；停止进入 `Stopped`；只有 `Faulted/Stopped` 接受 Reset 回到 `Idle`。非法信号直接拒绝，不猜测下一步。
+
+checkpoint 事务边界：
+
+```text
+Signal
+  → 纯状态迁移与校验
+  → IAgentCheckpointStore.SaveAsync(next)
+  → 保存成功后发布 Current
+```
+
+如果保存失败，内存中的 Current 保持不变。SQLite checkpoint 实现将在事件存储阶段接入。
+
+节点执行边界：
+
+```text
+AgentNodeRunner 读取 snapshot + revision
+  → IAgentNode 执行感知/校验/策略等工具
+  → 返回 AgentSignal
+  → revision 未变化才允许提交
+  → AgentStateMachine 再次验证合法迁移
+```
+
+`WaitingForRound`、`Observing`、`Paused` 等阶段只等待外部截图或用户/系统信号，不能注册自动执行节点。这样既避免忙循环，也阻止模型自己触发下一张截图或越过规则验证。
 
 主要事件：
 
