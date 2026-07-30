@@ -11,6 +11,7 @@
     <Project Path="src/MahjongAgent.Strategy/MahjongAgent.Strategy.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/MahjongAgent.Agent.Tests/MahjongAgent.Agent.Tests.csproj" />
     <Project Path="tests/MahjongAgent.Architecture.Tests/MahjongAgent.Architecture.Tests.csproj" />
     <Project Path="tests/MahjongAgent.Core.Tests/MahjongAgent.Core.Tests.csproj" />
     <Project Path="tests/MahjongAgent.Providers.OpenAICompatible.Tests/MahjongAgent.Providers.OpenAICompatible.Tests.csproj" />

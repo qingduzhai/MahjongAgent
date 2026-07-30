@@ -215,6 +215,32 @@ Windows Credential Manager
 
 SQLite 采用 `Microsoft.Data.Sqlite.Core` + `SQLitePCLRaw.bundle_e_sqlite3` 3.x，避免使用带已知高危公告的旧版原生 SQLite 传递依赖。启动时由 `SqliteMigrationRunner` 按资源编号执行迁移并记录到 `schema_migrations`。
 
+### 6.3 测试并保存的补偿事务
+
+SQLite 与 Windows Credential Manager 无法共享数据库事务，因此由 `OpenAiCompatibleProviderProfileService` 编排补偿事务：
+
+```text
+候选 Profile + 候选 Key（仅内存）
+  → 合成图片能力探测
+  → 失败：零持久化，返回分类诊断
+  → 成功：生成 ProviderProbeSnapshot
+  → 暂存新 Key 到 Credential Manager
+  → Upsert SQLite Profile
+  → 删除不再使用的旧 CredentialId
+  → 成功
+```
+
+任一步失败时按相反方向补偿：恢复旧凭据、删除新凭据、恢复旧 Profile 或删除新 Profile。原始操作失败但补偿成功时保留原始异常；补偿也失败时抛出 `ProviderProfileTransactionException` 并附带全部补偿异常，禁止向 UI 假报成功。
+
+约束：
+
+- 候选 Key 在能力探测成功前不写入 Credential Manager；
+- 探测 Runner 通过内存 Credential Resolver 使用候选 Key；
+- 同一个 CredentialId 不允许分配给多个 Profile，避免删除时误伤；
+- 切换为本地 `None` 认证后删除废弃 Key；
+- 删除 Profile 时先删除独占 Key，SQLite 删除失败则恢复 Key；
+- 调用取消发生在持久化中途时也执行不受取消令牌影响的补偿。
+
 ## 7. 记忆分层
 
 ### 7.1 瞬时视觉记忆

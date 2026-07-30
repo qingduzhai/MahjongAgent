@@ -42,6 +42,7 @@ src/
   MahjongAgent.Storage               档案、事件和快照持久化
   MahjongAgent.Platform.Windows      WPF、窗口捕获和悬浮层
 tests/
+  MahjongAgent.Agent.Tests
   MahjongAgent.Core.Tests
   MahjongAgent.Platform.Windows.Tests
   MahjongAgent.Providers.OpenAICompatible.Tests
