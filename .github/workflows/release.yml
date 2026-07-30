@@ -40,9 +40,15 @@ jobs:
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
-        run: >-
-          gh release create "${{ github.ref_name }}"
-          "artifacts/MahjongAgent-${{ github.ref_name }}-win-x64.zip"
-          --verify-tag
-          --generate-notes
-          --title "MahjongAgent ${{ github.ref_name }}"
+        run: |
+          $arguments = @(
+            "${{ github.ref_name }}",
+            "artifacts/MahjongAgent-${{ github.ref_name }}-win-x64.zip",
+            "--verify-tag",
+            "--generate-notes",
+            "--title", "MahjongAgent ${{ github.ref_name }}"
+          )
+          if ("${{ github.ref_name }}" -match "-") {
+            $arguments += "--prerelease"
+          }
+          gh release create @arguments
