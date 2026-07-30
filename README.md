@@ -64,11 +64,14 @@ dotnet build MahjongAgent.slnx
 ## 文档
 
 - [总体设计方案](docs/architecture.md)
+- [Agent 与长期记忆后端设计](docs/backend-agent-memory.md)
 - [桌面技术选型](docs/adr/0001-desktop-stack.md)
 - [产品界面职责](docs/adr/0002-product-surfaces.md)
 - [Kimi UI 设计提示词 v2](docs/ui/kimi-ui-prompt-v2.md)
 - [UI 审核清单](docs/ui/ui-review-checklist.md)
 - [UI 协作边界](docs/ui/handoff-contract.md)
+- [第一轮 UI 设计交付](docs/ui/round-1/README.md)
+- [第一轮 UI 审核结论](docs/ui/round-1/review-codex.md)
 
 ## 合规说明
 
