@@ -14,6 +14,8 @@
     <Project Path="tests/MahjongAgent.Architecture.Tests/MahjongAgent.Architecture.Tests.csproj" />
     <Project Path="tests/MahjongAgent.Core.Tests/MahjongAgent.Core.Tests.csproj" />
     <Project Path="tests/MahjongAgent.Providers.OpenAICompatible.Tests/MahjongAgent.Providers.OpenAICompatible.Tests.csproj" />
+    <Project Path="tests/MahjongAgent.Platform.Windows.Tests/MahjongAgent.Platform.Windows.Tests.csproj" />
     <Project Path="tests/MahjongAgent.Rules.Wuhan.Tests/MahjongAgent.Rules.Wuhan.Tests.csproj" />
+    <Project Path="tests/MahjongAgent.Storage.Tests/MahjongAgent.Storage.Tests.csproj" />
   </Folder>
 </Solution>

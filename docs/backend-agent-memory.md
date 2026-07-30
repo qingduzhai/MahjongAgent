@@ -199,6 +199,22 @@ Provider 配置声明能力，构造时校验所选模式；端点连通性和�
 
 首版暂不实现 `/responses`、流式输出和厂商专用 SDK。未来可以增加协议模式，但不得改变上层 `IMultimodalPerceptionProvider` 契约。
 
+### 6.2 Provider Profile 与凭据隔离
+
+Provider Profile 通过 SQLite 编号迁移持久化，包含 Base URI、路径、模型、认证传输、结构化输出模式、图片 detail、非敏感 Header、能力声明和最近一次探测摘要。表中只保存 `credential_id`，没有 API Key 或 Secret 值字段。
+
+```text
+SQLite Provider Profile
+  credential_id ───────┐
+                       ▼
+Windows Credential Manager
+  MahjongAgent:<credential_id> → API Key
+```
+
+`WindowsCredentialManagerApiKeyStore` 使用当前 Windows 用户的 Generic Credential，持久级别为 Local Machine。Key 以 UTF-8 写入，受 WinCred 2560 字节上限约束；临时字节缓冲在读写后清零。测试默认使用内存替身，显式的 Win32 冒烟测试只写入固定合成测试项并在 `finally` 中删除。
+
+SQLite 采用 `Microsoft.Data.Sqlite.Core` + `SQLitePCLRaw.bundle_e_sqlite3` 3.x，避免使用带已知高危公告的旧版原生 SQLite 传递依赖。启动时由 `SqliteMigrationRunner` 按资源编号执行迁移并记录到 `schema_migrations`。
+
 ## 7. 记忆分层
 
 ### 7.1 瞬时视觉记忆
@@ -282,6 +298,8 @@ state_snapshots
 observations
 observation_evidence
 decision_snapshots
+openai_compatible_provider_profiles
+schema_migrations
 ```
 
 ### 8.2 长期记忆

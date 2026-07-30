@@ -43,8 +43,10 @@ src/
   MahjongAgent.Platform.Windows      WPF、窗口捕获和悬浮层
 tests/
   MahjongAgent.Core.Tests
+  MahjongAgent.Platform.Windows.Tests
   MahjongAgent.Providers.OpenAICompatible.Tests
   MahjongAgent.Rules.Wuhan.Tests
+  MahjongAgent.Storage.Tests
   MahjongAgent.Architecture.Tests
 docs/
   architecture.md                    总体设计方案
