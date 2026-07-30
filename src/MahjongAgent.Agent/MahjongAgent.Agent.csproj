@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../MahjongAgent.Core/MahjongAgent.Core.csproj" />
+    <ProjectReference Include="../MahjongAgent.Perception/MahjongAgent.Perception.csproj" />
+    <ProjectReference Include="../MahjongAgent.Rules.Wuhan/MahjongAgent.Rules.Wuhan.csproj" />
+    <ProjectReference Include="../MahjongAgent.Storage/MahjongAgent.Storage.csproj" />
+    <ProjectReference Include="../MahjongAgent.Strategy/MahjongAgent.Strategy.csproj" />
+  </ItemGroup>
+</Project>

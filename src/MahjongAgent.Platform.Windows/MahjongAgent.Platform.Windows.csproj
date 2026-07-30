@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../MahjongAgent.Agent/MahjongAgent.Agent.csproj" />
+    <ProjectReference Include="../MahjongAgent.Capture.Abstractions/MahjongAgent.Capture.Abstractions.csproj" />
+    <ProjectReference Include="../MahjongAgent.Core/MahjongAgent.Core.csproj" />
+  </ItemGroup>
+</Project>
