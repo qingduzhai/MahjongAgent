@@ -26,7 +26,7 @@
 6. 规则与牌效由确定性代码计算，LLM 不拥有最终决策权。
 7. LLM 只负责视觉候选、解释、追问和后台候选记忆提炼。
 8. 长期经验必须经过规则验证和固定评测集验证后才能晋升。
-9. 窗口与视频通过统一 `IFrameSource` 进入系统，来源差异不得进入牌局状态和策略核心。
+9. `IFrameSource` 只产生带时间戳的静态截图；游戏窗口、视频播放器或离线抽帧的来源差异不得进入牌局状态和策略核心。
 
 ## 3. 技术选型
 
@@ -52,7 +52,7 @@
 ## 4. 总体运行链路
 
 ```text
-IFrameSource（视频或窗口）
+IFrameSource（逐张静态截图）
   → FrameChanged
   → MultimodalPerceptionProvider
   → ObservationBatch（候选）
@@ -79,7 +79,7 @@ RoundEnded
   → candidate / confirmed / rejected / superseded
 ```
 
-视频导入使用同一条正式链路，但默认以最快速度运行，并额外保存 `source_id + source_timestamp + content_fingerprint`。视频中的 Observation 仍是候选，不因可重复播放而自动成为正确事实。训练、验证和测试数据必须按完整视频或牌局切分，禁止相邻帧泄漏。
+完整牌局视频可以通过播放器窗口实时截图，也可以由离线工具按时间戳抽成截图序列；Agent 和多模态 Provider 均不直接处理整段视频。截图中的 Observation 仍是候选，不因来源视频可重复播放而自动成为正确事实。训练、验证和测试数据必须按完整视频或牌局切分，禁止相邻截图泄漏。
 
 ## 5. Agent 编排
 
@@ -614,7 +614,7 @@ MahjongAgent.Platform.Windows
 
 ### Phase 1
 
-- 视频 `IFrameSource`、时间轴定位与可重复感知回归；
+- 固定截图序列、来源时间戳与可重复感知回归；
 - GameEvent、GameState、Reducer；
 - Observation Schema 和 Resolver；
 - SQLite 事件存储与快照；

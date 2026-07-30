@@ -4,6 +4,8 @@ namespace MahjongAgent.Capture.Abstractions;
 
 public sealed class CaptureFrame : IDisposable
 {
+  // CaptureFrame owns one still-image pixel buffer; it never represents an
+  // encoded video stream. Consumers must dispose it after processing.
   private IMemoryOwner<byte>? _pixelBuffer;
   private readonly int _bufferLength;
 
