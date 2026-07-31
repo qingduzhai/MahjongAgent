@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Windows.Media;
 using MahjongAgent.Agent.Orchestration;
+using MahjongAgent.Perception.Observations;
+using MahjongAgent.Perception.Prompting;
 using MahjongAgent.Perception.Providers;
 using MahjongAgent.Platform.Windows.WindowCapture;
 using MahjongAgent.Providers.OpenAICompatible;
@@ -237,13 +239,52 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         services.HttpClient,
         services.CredentialStore,
         profile.ToOptions());
-      var request = new PerceptionRequest(
-        "你是麻将桌面观察器。只描述截图中清晰可见的内容，不猜测被遮挡或未显示的信息。",
-        "判断这是否是麻将牌局画面，并概括当前可见区域。若能清楚识别当前玩家手牌，则按从左到右列出牌面；不能确认的牌写 unknown。",
+      var frameId = $"preview-{screenshot.CapturedAtUtc:yyyyMMddTHHmmssfffZ}";
+      var promptContext = new PerceptionPromptContext(
+        "wuhan-red-center-laizi-kong-preview-v1",
+        0,
+        "unclassified-v1",
+        [frameId],
+        knownFacts:
+        [
+          new KnownFact(
+            "tile.encoding",
+            "Canonical tile codes use m for characters, p for dots, s for bamboo and z for honors.",
+            100,
+            true),
+          new KnownFact(
+            "capture.scope",
+            "This is a user-selected complete window screenshot; no prior layout has been confirmed.",
+            100,
+            true)
+        ],
+        uncertainties:
+        [
+          new Uncertainty(
+            "layout.profile",
+            "No confirmed visual profile exists for this preview.",
+            false,
+            80)
+        ],
+        changedRegions:
+        [
+          new ChangedRegion(
+            "whole_window",
+            1,
+            "Initial full-window calibration frame.",
+            100)
+        ]);
+      var promptPackage = new PerceptionPromptComposer().Compose(
+        PerceptionMode.Calibrate,
+        promptContext);
+      var request = promptPackage.CreateRequest(
         [new PerceptionImage("image/png", screenshot.PngBytes)],
-        CreatePreviewSchema(),
         $"preview-{Guid.NewGuid():N}");
       var result = await provider.ObserveAsync(request, cancellationToken);
+      MahjongObservationParser.Parse(
+        result.StructuredOutput,
+        promptPackage.Mode,
+        promptPackage.FrameIds);
       AnalysisJson = JsonSerializer.Serialize(result.StructuredOutput, PrettyJson);
     });
   }
@@ -310,31 +351,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
       IsBusy = false;
       AgentPhase = services.AgentOrchestrator.Current.Phase;
     }
-  }
-
-  private static StructuredOutputSchema CreatePreviewSchema()
-  {
-    using var document = JsonDocument.Parse(
-      """
-      {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["is_mahjong", "summary", "visible_self_tiles", "uncertainties"],
-        "properties": {
-          "is_mahjong": { "type": "boolean" },
-          "summary": { "type": "string" },
-          "visible_self_tiles": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
-          "uncertainties": {
-            "type": "array",
-            "items": { "type": "string" }
-          }
-        }
-      }
-      """);
-    return new StructuredOutputSchema("mahjong_screenshot_preview", document.RootElement);
   }
 
   private bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)

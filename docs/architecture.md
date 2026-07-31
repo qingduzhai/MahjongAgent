@@ -6,6 +6,7 @@
 > 首个视觉方案：多模态模型主识别，结构化牌局状态作为唯一权威记忆
 
 Agent 编排、长期记忆、混合检索、自学习边界和 .NET 模块落位的实现级设计，见 [Agent 与长期记忆后端设计方案](backend-agent-memory.md)。
+多模态 Prompt、Observation 契约、上下文预算和攻略检索的实现细节，见 [多模态 Prompt 与长期记忆检索实现方案](multimodal-prompt-and-memory-retrieval.md)。
 
 Agent 核心不依赖 LangGraph：使用 C# 强类型状态机、显式信号和可持久化 checkpoint；决策记录见 [ADR-0004](adr/0004-csharp-agent-orchestration.md)。
 

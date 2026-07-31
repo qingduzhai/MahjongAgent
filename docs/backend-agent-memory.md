@@ -4,6 +4,8 @@
 > 日期：2026-07-30
 > 适用范围：MahjongAgent 的感知编排、牌局状态、策略、长期记忆、检索与自学习
 
+多模态 Prompt 的三链路隔离、版本化上下文、Observation 契约与检索审计细节，见 [多模态 Prompt 与长期记忆检索实现方案](multimodal-prompt-and-memory-retrieval.md)。
+
 ## 1. 设计目标
 
 后端系统需要同时满足：

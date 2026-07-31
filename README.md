@@ -141,6 +141,7 @@ docs/                                     架构、ADR、UI 与发布说明
 
 - [总体架构](docs/architecture.md)
 - [Agent 与长期记忆后端设计](docs/backend-agent-memory.md)
+- [多模态 Prompt 与长期记忆检索](docs/multimodal-prompt-and-memory-retrieval.md)
 - [桌面技术选型](docs/adr/0001-desktop-stack.md)
 - [产品界面职责](docs/adr/0002-product-surfaces.md)
 - [统一截图序列来源](docs/adr/0003-unified-frame-sources.md)
