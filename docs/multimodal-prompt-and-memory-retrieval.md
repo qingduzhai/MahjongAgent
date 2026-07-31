@@ -387,3 +387,14 @@ retrieval_audit_candidates
 6. tile 候选只接受标准牌编码；
 7. mode 和 frame ID 与请求不一致时拒绝；
 8. 全量 Release 测试和构建通过。
+
+## 14. 实现进度
+
+截至 2026-07-31：
+
+- M1 已完成：版本化感知 Prompt、预算裁剪、三种感知模式、Observation v1 和本地强类型校验；
+- M2 基础已完成：`GameEvent`、`GameState`、确定性 Reducer、两帧确认和 Observation Resolver 事实门控；
+- Reducer 已执行事件顺序、跨局、时间、手牌结构、牌数上限、弃牌归属和副露移动校验；
+- Resolver 只晋升已映射区域中的高置信度单一候选，描述性观察继续保留为 Observation；
+- 对手隐藏摸牌只记录未知张数，不允许从视觉提示晋升为具体牌面；
+- 尚未完成：SQLite 事件存储、状态快照、应用重启恢复、持续变化检测和副露 Observation 聚合。
