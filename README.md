@@ -23,7 +23,7 @@
 | API Key 安全保存 | 可用 | 仅存 Windows Credential Manager |
 | 单张截图结构化识别 | 实验性 | 用于验证视觉链路，不作为出牌依据 |
 | C# Agent 状态机与 checkpoint | 可用 | 不依赖 LangGraph，支持暂停、恢复和故障状态 |
-| 持续变化检测与牌局事件重建 | 开发中 | Observation Resolver 与 `GameState` 尚未接入发布版 |
+| 持续变化检测与牌局事件重建 | 开发中 | `GameEvent`、`GameState`、Reducer 与 Resolver 基础已实现，持续捕获和持久化尚未接入发布版 |
 | 武汉麻将完整策略 | 开发中 | 规则、牌效和防放铳策略尚未完成 |
 | 悬浮助手 | 设计完成 | UI v1.3 已锁定，尚未进入正式实现 |
 
