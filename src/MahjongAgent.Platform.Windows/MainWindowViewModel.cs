@@ -281,6 +281,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         [new PerceptionImage("image/png", screenshot.PngBytes)],
         $"preview-{Guid.NewGuid():N}");
       var result = await provider.ObserveAsync(request, cancellationToken);
+      // Validate the structured output against the v1 observation contract;
+      // the parsed batch is not consumed by the preview flow yet.
       MahjongObservationParser.Parse(
         result.StructuredOutput,
         promptPackage.Mode,
