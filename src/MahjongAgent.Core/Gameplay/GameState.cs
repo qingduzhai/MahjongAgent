@@ -52,7 +52,7 @@ public sealed record PlayerGameState
 
 public sealed record GameState
 {
-  private GameState()
+  internal GameState()
   {
   }
 

@@ -1,12 +1,13 @@
+using System.IO;
+using System.Net.Http;
 using MahjongAgent.Agent.Orchestration;
 using MahjongAgent.Agent.Providers;
+using MahjongAgent.Core.Gameplay;
 using MahjongAgent.Platform.Windows.Credentials;
 using MahjongAgent.Platform.Windows.WindowCapture;
 using MahjongAgent.Providers.OpenAICompatible;
 using MahjongAgent.Storage;
 using Microsoft.Data.Sqlite;
-using System.IO;
-using System.Net.Http;
 
 namespace MahjongAgent.Platform.Windows;
 
@@ -17,13 +18,19 @@ internal sealed class AppServices : IDisposable
     IApiKeyCredentialStore credentialStore,
     IOpenAiCompatibleProviderProfileRepository profileRepository,
     OpenAiCompatibleProviderProfileService providerProfileService,
-    AgentOrchestrator agentOrchestrator)
+    AgentOrchestrator agentOrchestrator,
+    SqliteGameEventJournal gameEventJournal,
+    IReadOnlyDictionary<Guid, GameState> recoveredGameStates,
+    IReadOnlyDictionary<Guid, string> gameStateRecoveryFailures)
   {
     HttpClient = httpClient;
     CredentialStore = credentialStore;
     ProfileRepository = profileRepository;
     ProviderProfileService = providerProfileService;
     AgentOrchestrator = agentOrchestrator;
+    GameEventJournal = gameEventJournal;
+    RecoveredGameStates = recoveredGameStates;
+    GameStateRecoveryFailures = gameStateRecoveryFailures;
   }
 
   public HttpClient HttpClient { get; }
@@ -35,6 +42,12 @@ internal sealed class AppServices : IDisposable
   public OpenAiCompatibleProviderProfileService ProviderProfileService { get; }
 
   public AgentOrchestrator AgentOrchestrator { get; }
+
+  public SqliteGameEventJournal GameEventJournal { get; }
+
+  public IReadOnlyDictionary<Guid, GameState> RecoveredGameStates { get; }
+
+  public IReadOnlyDictionary<Guid, string> GameStateRecoveryFailures { get; }
 
   public WindowCatalog WindowCatalog { get; } = new();
 
@@ -58,6 +71,28 @@ internal sealed class AppServices : IDisposable
     await new SqliteMigrationRunner(connectionFactory)
       .ApplyAsync(cancellationToken)
       .ConfigureAwait(false);
+    var gameEventJournal = new SqliteGameEventJournal(connectionFactory);
+    var recoveredGameStates = new Dictionary<Guid, GameState>();
+    var gameStateRecoveryFailures = new Dictionary<Guid, string>();
+    foreach (var sessionId in await gameEventJournal
+               .ListActiveSessionIdsAsync(cancellationToken)
+               .ConfigureAwait(false))
+    {
+      try
+      {
+        var recovered = await gameEventJournal
+          .RecoverAsync(sessionId, cancellationToken)
+          .ConfigureAwait(false);
+        if (recovered is not null)
+        {
+          recoveredGameStates.Add(sessionId, recovered);
+        }
+      }
+      catch (GameEventJournalException exception)
+      {
+        gameStateRecoveryFailures.Add(sessionId, exception.Message);
+      }
+    }
 
     var credentialStore = new WindowsCredentialManagerApiKeyStore();
     var profileRepository = new SqliteOpenAiCompatibleProviderProfileRepository(connectionFactory);
@@ -76,7 +111,10 @@ internal sealed class AppServices : IDisposable
       credentialStore,
       profileRepository,
       providerProfileService,
-      agentOrchestrator);
+      agentOrchestrator,
+      gameEventJournal,
+      recoveredGameStates,
+      gameStateRecoveryFailures);
   }
 
   public void Dispose() => HttpClient.Dispose();
