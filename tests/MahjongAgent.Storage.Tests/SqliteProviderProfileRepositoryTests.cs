@@ -16,7 +16,7 @@ public sealed class SqliteProviderProfileRepositoryTests
     await using var command = database.AnchorConnection.CreateCommand();
     command.CommandText = "SELECT COUNT(*) FROM schema_migrations;";
     var migrationCount = Convert.ToInt32(await command.ExecuteScalarAsync());
-    Assert.Equal(1, migrationCount);
+    Assert.Equal(2, migrationCount);
   }
 
   [Fact]
